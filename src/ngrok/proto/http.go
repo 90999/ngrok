@@ -54,9 +54,19 @@ func NewHttp() *Http {
 }
 
 func extractBody(r io.Reader) ([]byte, io.ReadCloser, error) {
-	buf := new(bytes.Buffer)
-	_, err := buf.ReadFrom(r)
-	return buf.Bytes(), ioutil.NopCloser(buf), err
+	//buf := new(bytes.Buffer)
+	//_, err := buf.ReadFrom(r)
+	//return buf.Bytes(), ioutil.NopCloser(buf), err
+	
+	// 修复说明 https://www.liangzl.com/get-article-detail-222735.html
+	buf := new(bytes.Buffer) 
+	// 万恶的根源在这里
+	// buf.ReadFrom(r)
+	defer r.Close() // 这个是重点
+	// 注释 原来的返回值
+	// return buf.Bytes(), ioutil.NopCloser(buf), err
+	return buf.Bytes(), nil, nil	
+	
 }
 
 func (h *Http) GetName() string { return "http" }
